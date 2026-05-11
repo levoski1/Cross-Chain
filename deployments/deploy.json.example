@@ -1,0 +1,43 @@
+{
+  "sepolia": {
+    "WaveEscrow": {
+      "address": "0x...",
+      "deployTx": "0x...",
+      "deployBlock": 1234567,
+      "deployer": "0x...",
+      "timestamp": "2024-01-01T00:00:00Z",
+      "implementation": "WaveEscrow",
+      "version": "1.0.0"
+    },
+    "WaveReputation": {
+      "address": "0x...",
+      "deployTx": "0x...",
+      "deployBlock": 1234568,
+      "deployer": "0x...",
+      "timestamp": "2024-01-01T00:01:00Z",
+      "implementation": "WaveReputation",
+      "version": "1.0.0"
+    },
+    "WaveScoping": {
+      "address": "0x...",
+      "deployTx": "0x...",
+      "deployBlock": 1234569,
+      "deployer": "0x...",
+      "timestamp": "2024-01-01T00:02:00Z",
+      "implementation": "WaveScoping",
+      "version": "1.0.0"
+    },
+    "RewardSplitter": {
+      "address": "0x...",
+      "deployTx": "0x...",
+      "deployBlock": 1234570,
+      "deployer": "0x...",
+      "timestamp": "2024-01-01T00:03:00Z",
+      "implementation": "RewardSplitter",
+      "version": "1.0.0"
+    }
+  },
+  "ethereum": {},
+  "polygon": {},
+  "arbitrum": {}
+}

@@ -1,0 +1,120 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: RewardSplitter
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: RewardSplitter
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - SplitConfig
+        - PayoutEvent
+        - SplitterPauseEvent
+        - SplitterUnpauseEvent
+      abis:
+        - name: RewardSplitter
+          file: ../artifacts/contracts/split/RewardSplitter.sol/RewardSplitter.json
+      eventHandlers:
+        - event: SplitConfigUpdated(indexed address,address,address,uint256,uint256,uint256)
+          handler: handleSplitConfigUpdated
+        - event: PayoutSplit(indexed address,uint256,uint256,uint256,uint256)
+          handler: handlePayoutSplit
+        - event: SplitterPaused(indexed address)
+          handler: handleSplitterPaused
+        - event: SplitterUnpaused(indexed address)
+          handler: handleSplitterUnpaused
+      file: ./src/mapping.ts
+
+  - kind: ethereum
+    name: WaveEscrow
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: WaveEscrow
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Wave
+        - EscrowDepositEvent
+        - WaveClaimEvent
+        - EmergencyWithdrawEvent
+      abis:
+        - name: WaveEscrow
+          file: ../artifacts/contracts/vault/WaveEscrow.sol/WaveEscrow.json
+      eventHandlers:
+        - event: WaveCreated(indexed uint256,uint256,indexed address)
+          handler: handleWaveCreated
+        - event: EscrowDeposited(indexed address,indexed uint256,uint256)
+          handler: handleEscrowDeposited
+        - event: WaveClaimed(indexed address,indexed uint256,uint256)
+          handler: handleWaveClaimed
+        - event: EmergencyWithdrawn(indexed address,indexed uint256,uint256)
+          handler: handleEmergencyWithdrawn
+      file: ./src/mapping.ts
+
+  - kind: ethereum
+    name: WaveReputation
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: WaveReputation
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Contributor
+        - Badge
+        - ReputationAwardEvent
+      abis:
+        - name: WaveReputation
+          file: ../artifacts/contracts/identity/WaveReputation.sol/WaveReputation.json
+      eventHandlers:
+        - event: ContributorVerified(indexed address,indexed bytes32)
+          handler: handleContributorVerified
+        - event: ReputationAwarded(indexed address,uint256,string)
+          handler: handleReputationAwarded
+        - event: BadgeIssued(indexed address,indexed bytes32,uint256)
+          handler: handleBadgeIssued
+      file: ./src/mapping.ts
+
+  - kind: ethereum
+    name: WaveScoping
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: WaveScoping
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Issue
+        - VoteEvent
+      abis:
+        - name: WaveScoping
+          file: ../artifacts/contracts/governance/WaveScoping.sol/WaveScoping.json
+      eventHandlers:
+        - event: IssueProposed(indexed uint256,indexed address,string,uint256)
+          handler: handleIssueProposed
+        - event: IssueSelected(indexed uint256,indexed uint256,uint256,uint256)
+          handler: handleIssueSelected
+        - event: VoteCast(indexed uint256,indexed address,uint256,bool)
+          handler: handleVoteCast
+        - event: IssueFinalized(indexed uint256,bool)
+          handler: handleIssueFinalized
+      file: ./src/mapping.ts

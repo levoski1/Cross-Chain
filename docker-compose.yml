@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  hardhat-node:
+    build:
+      context: .
+      target: runner
+    ports:
+      - "8545:8545"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - hardhat-data:/app/data
+    command: ["node"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  hardhat-deploy:
+    build:
+      context: .
+      target: runner
+    environment:
+      - NODE_ENV=development
+      - DEPLOY_NETWORK=localhost
+      - PRIVATE_KEY_DEPLOYER=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+    depends_on:
+      hardhat-node:
+        condition: service_healthy
+    command: >
+      sh -c "sleep 2 && npx hardhat run scripts/deploy/deploy-all.ts --network localhost"
+
+volumes:
+  hardhat-data:

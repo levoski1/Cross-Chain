@@ -1,0 +1,11 @@
+{
+  "detectors_to_exclude": "conformance-to-solidity-naming-conventions",
+  "exclude_informational": true,
+  "exclude_low": false,
+  "exclude_medium": false,
+  "exclude_high": false,
+  "filter_paths": "(mocks/|interfaces/|@openzeppelin)",
+  "solc_disable_warnings": true,
+  "solc_remaps": ["@openzeppelin/contracts=node_modules/@openzeppelin/contracts"],
+  "compile_force_framework": "hardhat"
+}

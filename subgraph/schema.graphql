@@ -1,0 +1,233 @@
+"""
+Cross-Chain Drips Splitter — Subgraph Schema
+Indexes all events from WaveEscrow, WaveReputation, WaveScoping, and RewardSplitter.
+"""
+
+# ═══════════════════════════════════════════════════════════════
+# RewardSplitter Entities
+# ═══════════════════════════════════════════════════════════════
+
+type SplitConfig @entity {
+  "Contributor address (lowercase hex)"
+  id: ID!
+
+  "Savings vault contract address"
+  savingsVault: Bytes!
+
+  "Treasury wallet address"
+  treasury: Bytes!
+
+  "Treasury share in basis points"
+  treasuryShare: BigInt!
+
+  "Savings share in basis points"
+  savingsShare: BigInt!
+
+  "Implicit contributor share (10000 - treasuryShare - savingsShare)"
+  contributorShare: BigInt!
+
+  "Whether the config is active"
+  active: Boolean!
+
+  "Block number when config was last updated"
+  updatedAtBlock: BigInt!
+
+  "Timestamp when config was last updated"
+  updatedAt: BigInt!
+}
+
+type PayoutEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+
+  "Contributor whose config was used"
+  contributor: Bytes!
+
+  "Total msg.value of payout"
+  totalAmount: BigInt!
+
+  "Amount sent to contributor"
+  toContributor: BigInt!
+
+  "Amount sent to savings vault"
+  toSavings: BigInt!
+
+  "Amount sent to treasury"
+  toTreasury: BigInt!
+
+  "Block number"
+  blockNumber: BigInt!
+
+  "Timestamp"
+  timestamp: BigInt!
+
+  "Transaction hash"
+  transactionHash: Bytes!
+}
+
+type SplitterPauseEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+  by: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type SplitterUnpauseEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+  by: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+# ═══════════════════════════════════════════════════════════════
+# WaveEscrow Entities
+# ═══════════════════════════════════════════════════════════════
+
+type Wave @entity {
+  "Wave ID as string"
+  id: ID!
+
+  "Total ETH deposited"
+  totalPool: BigInt!
+
+  "Unix deadline timestamp"
+  deadline: BigInt!
+
+  "Whether wave is finalized"
+  finalized: Boolean!
+
+  "Block created"
+  createdAtBlock: BigInt!
+
+  "Timestamp created"
+  createdAt: BigInt!
+
+  "Deposit events for this wave"
+  deposits: [EscrowDepositEvent!]! @derivedFrom(field: "wave")
+
+  "Claim events for this wave"
+  claims: [WaveClaimEvent!]! @derivedFrom(field: "wave")
+}
+
+type EscrowDepositEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+  wave: Wave!
+  depositor: Bytes!
+  amount: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type WaveClaimEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+  wave: Wave!
+  contributor: Bytes!
+  amount: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type EmergencyWithdrawEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+  wave: Wave!
+  caller: Bytes!
+  amount: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+# ═══════════════════════════════════════════════════════════════
+# WaveReputation Entities
+# ═══════════════════════════════════════════════════════════════
+
+type Contributor @entity {
+  "Contributor address (lowercase hex)"
+  id: ID!
+
+  "Identity hash"
+  identityHash: Bytes!
+
+  "Total reputation points"
+  totalPoints: BigInt!
+
+  "Number of contributions"
+  contributionCount: BigInt!
+
+  "Last activity timestamp"
+  lastActivity: BigInt!
+
+  "Badges held by this contributor"
+  badges: [Badge!]! @derivedFrom(field: "contributor")
+}
+
+type Badge @entity {
+  "{contributor}-{badgeId}"
+  id: ID!
+  contributor: Contributor!
+  badgeId: Bytes!
+  issuedAt: BigInt!
+  expiry: BigInt!
+  expired: Boolean!
+}
+
+type ReputationAwardEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+  contributor: Contributor!
+  points: BigInt!
+  reason: String!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+# ═══════════════════════════════════════════════════════════════
+# WaveScoping Entities
+# ═══════════════════════════════════════════════════════════════
+
+type Issue @entity {
+  "Issue ID as string"
+  id: ID!
+
+  "Proposer address"
+  proposer: Bytes!
+
+  "Issue description"
+  description: String!
+
+  "Proposed reward pool"
+  rewardPool: BigInt!
+
+  "Total approval weight"
+  approvalWeight: BigInt!
+
+  "Total rejection weight"
+  rejectionWeight: BigInt!
+
+  "Whether issue was selected"
+  selected: Boolean!
+
+  "Whether issue is finalized"
+  finalized: Boolean!
+
+  "Block created"
+  createdAtBlock: BigInt!
+
+  "Timestamp created"
+  createdAt: BigInt!
+}
+
+type VoteEvent @entity(immutable: true) {
+  "{txHash}-{logIndex}"
+  id: ID!
+  issue: Issue!
+  voter: Bytes!
+  weight: BigInt!
+  inFavor: Boolean!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
